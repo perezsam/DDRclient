@@ -1,5 +1,5 @@
-package client;
 
+package client;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -14,17 +14,23 @@ public class Arrow extends JLabel{
     String typeArrow="";
     String direction="";
     int animationFrame=1;
-    int counterPosition=300;
-    int speed=15;
+    int counterPosition=0;
+    int speed=4;
+    
+    int xPositionL=10;
+    int xPositionD=70;
+    int xPositionU=140;
+    int xPositionR=200;
     
     public Arrow(){
         
     }
     
-    public Arrow(String typeArrow, String direction){
+    public Arrow(String typeArrow, String direction, int counterPosition){
         
         this.typeArrow=typeArrow;
         this.direction=direction;
+        this.counterPosition=counterPosition;
         
         setText("");
         setSize(60,60);
@@ -51,12 +57,14 @@ public class Arrow extends JLabel{
         
         timerTaskMovement = new TimerTask() 
 	     { 
-	         public void run()  
+	         int innerCounter=counterPosition;
+                 
+                 public void run()  
 	         { 
-                    setBounds(70,counterPosition,60,60);
-                    counterPosition--;
-                    if (counterPosition<=0){
-                        counterPosition=0;
+                    setBounds(getXBound(direction),innerCounter,60,60);
+                    innerCounter--;
+                    if (innerCounter<=0){
+                        innerCounter=0;
                     }
                     
                     if (getBounds().getY()<10){
@@ -68,7 +76,23 @@ public class Arrow extends JLabel{
 	     }; 
  
         Timer timer2 = new Timer(); 
-        timer2.scheduleAtFixedRate(timerTaskMovement, 0, 5);
+        timer2.scheduleAtFixedRate(timerTaskMovement, 0, speed);
+    }
+    
+    public int getXBound(String str){
+        int result=10;
+        if (str.equalsIgnoreCase("L")){
+            result=xPositionL;
+        }else if(str.equalsIgnoreCase("D")){
+            result=xPositionD;
+        }else if(str.equalsIgnoreCase("U")){
+            result=xPositionU;
+        }else if(str.equalsIgnoreCase("R")){
+            result=xPositionR;
+        }else{
+            result=xPositionL;
+        }
+        return result;
     }
     
     public void destroy(){
@@ -85,5 +109,8 @@ public class Arrow extends JLabel{
         setIcon(null);
     }
     
+    public String getDirection(){
+        return direction;
+    }
     
 }
