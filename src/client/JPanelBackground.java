@@ -6,7 +6,10 @@
 package client;
 
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.geom.Line2D;
+import java.awt.image.BufferedImage;
  
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
@@ -39,6 +42,12 @@ public class JPanelBackground extends JPanel {
 		}
  
 		super.paintComponent(g);
+                
+                Graphics2D g2 = (Graphics2D) g;
+                //g2.getStroke(new Basic)
+                Line2D lin = new Line2D.Float(5, 10, 5,550);
+                
+                g2.draw(lin);
 	}
  
 	// Metodo donde le pasaremos la dirección de la imagen a cargar.
@@ -49,5 +58,11 @@ public class JPanelBackground extends JPanel {
 		this.background = new ImageIcon(getClass().getResource(imagePath)).getImage();
 		repaint();
 	}
+        
+        public void setBackground(BufferedImage img){
+            this.setOpaque(false);
+            this.background = img;
+            repaint();
+        }
  
 }

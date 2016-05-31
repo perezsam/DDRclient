@@ -14,7 +14,7 @@ public class Server {
     // an ArrayList to keep the list of the Client
     private ArrayList<ClientThread> al;
     // if I am in a GUI
-    private ServerGUI sg;
+    public static ServerGUI sg;
     // to display time
     private SimpleDateFormat sdf;
     // the port number to listen for connection
@@ -236,9 +236,8 @@ public class Server {
                 try {
                     cm = (ChatMessage) sInput.readObject();
                 } catch (IOException e) {
-                    display(username + " Exception reading Streams: " + e);
                     broadcast("END GAME");
-                    
+                    display(username + " Exception reading Streams: " + e);
                     break;
                 } catch (ClassNotFoundException e2) {
                     break;
@@ -287,6 +286,21 @@ public class Server {
 						writeMsg((i+1) + ") " + ct.username + " since " + ct.date);
 					}*/
 
+                        
+                        //writeMsg("IMAGE:12345");
+                        //Send images to clients
+                        
+                        for(int i=0;i<sg.listOfPicturesToSendEncoded.size();i++){
+                            writeMsg("IMAGE:"+sg.listOfPicturesToSendEncoded.get(i));
+                        }
+                        try{
+                            Thread.sleep(1000);
+                        }catch(Exception e){
+                            e.printStackTrace();
+                        }
+                            
+                        
+                        
                         broadcast("Number of users:" + al.size());
                         break;
                 }

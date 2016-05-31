@@ -4,10 +4,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import sun.misc.BASE64Encoder;
 
 /*
  * The server as a GUI
@@ -26,6 +29,7 @@ public class ServerGUI extends JFrame implements ActionListener, WindowListener 
 
     ArrayList<String> listOfPicturesToSend = new ArrayList<String>();
     ArrayList<BufferedImage> listOfPicturesToSendBuffered = new ArrayList<BufferedImage>();
+    ArrayList<String> listOfPicturesToSendEncoded = new ArrayList<String>();
     int numberOfPicturesToSend = 3;
 
     // server constructor that receive the port to listen to for connection as parameter
@@ -79,6 +83,24 @@ public class ServerGUI extends JFrame implements ActionListener, WindowListener 
         }
 
     }
+    
+    public static String encodeToString(BufferedImage image, String type) {
+        String imageString = null;
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+
+        try {
+            ImageIO.write(image, type, bos);
+            byte[] imageBytes = bos.toByteArray();
+
+            BASE64Encoder encoder = new BASE64Encoder();
+            imageString = encoder.encode(imageBytes);
+
+            bos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return imageString;
+    }
 
     // start or stop where clicked
     public void actionPerformed(ActionEvent e) {
@@ -103,10 +125,12 @@ public class ServerGUI extends JFrame implements ActionListener, WindowListener 
             try {
                 if (userSelection == JFileChooser.APPROVE_OPTION) {
                     File fileToSave = fileChooser.getSelectedFile();
-                    System.out.println("Save as file: " + fileToSave.getAbsolutePath());
-                    listOfPicturesToSend.add(fileToSave.getAbsolutePath());
-                    BufferedImage bimg =ImageIO.read(new File(fileToSave.getAbsolutePath()));
+                    String fileToSavePath = fileToSave.getAbsolutePath();
+                    System.out.println("Save as file: " + fileToSavePath);
+                    listOfPicturesToSend.add(fileToSavePath);
+                    BufferedImage bimg =ImageIO.read(new File(fileToSavePath));
                     listOfPicturesToSendBuffered.add(bimg);
+                    listOfPicturesToSendEncoded.add(encodeToString(bimg, fileToSavePath.substring(fileToSavePath.indexOf(".")+1)));
                 }
             } catch (Exception e1) {
                 e1.printStackTrace();
@@ -115,7 +139,7 @@ public class ServerGUI extends JFrame implements ActionListener, WindowListener 
             }
         }
 
-        if (listOfPicturesToSend.size() < numberOfPicturesToSend) {
+        if (listOfPicturesToSendEncoded.size() < numberOfPicturesToSend) {
             JOptionPane.showMessageDialog(this, "You need to select exactly " + numberOfPicturesToSend + " pictures to send to the players.");
             return;
         }
