@@ -5,6 +5,7 @@
  */
 package client;
 
+import java.awt.BasicStroke;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -27,14 +28,16 @@ public class JPanelBackground extends JPanel {
  
 	// Atributo que guardara la imagen de Background que le pasemos.
 	private Image background;
+        
+        
  
 	// Metodo que es llamado automaticamente por la maquina virtual Java cada vez que repinta
 	public void paintComponent(Graphics g) {
  
-		/* Obtenemos el tamaño del panel para hacer que se ajuste a este
+		/* Obtenemos el tamaÃ±o del panel para hacer que se ajuste a este
 		cada vez que redimensionemos la ventana y se lo pasamos al drawImage */
 		int width = this.getSize().width;
-		int height = this.getSize().height;
+		int height = (int)(this.getSize().height*0.9);
  
 		// Mandamos que pinte la imagen en el panel
 		if (this.background != null) {
@@ -43,14 +46,14 @@ public class JPanelBackground extends JPanel {
  
 		super.paintComponent(g);
                 
-                Graphics2D g2 = (Graphics2D) g;
-                //g2.getStroke(new Basic)
+/*                Graphics2D g2 = (Graphics2D) g;
+                g2.setStroke(new BasicStroke(5));
                 Line2D lin = new Line2D.Float(5, 10, 5,550);
                 
-                g2.draw(lin);
+                g2.draw(lin);*/
 	}
  
-	// Metodo donde le pasaremos la dirección de la imagen a cargar.
+	// Metodo donde le pasaremos la direcciÃ³n de la imagen a cargar.
 	public void setBackground(String imagePath) {
 		
 		// Construimos la imagen y se la asignamos al atributo background.

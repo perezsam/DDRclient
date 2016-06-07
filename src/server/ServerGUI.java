@@ -28,9 +28,13 @@ public class ServerGUI extends JFrame implements ActionListener, WindowListener 
     private Server server;
 
     ArrayList<String> listOfPicturesToSend = new ArrayList<String>();
+    ArrayList<String> listOfResultsOfGame = new ArrayList<String>();
     ArrayList<BufferedImage> listOfPicturesToSendBuffered = new ArrayList<BufferedImage>();
     ArrayList<String> listOfPicturesToSendEncoded = new ArrayList<String>();
     int numberOfPicturesToSend = 3;
+    
+    String wordToLabel="";
+    String pathOfResultFile="";
 
     // server constructor that receive the port to listen to for connection as parameter
     ServerGUI(int port) {
@@ -112,7 +116,23 @@ public class ServerGUI extends JFrame implements ActionListener, WindowListener 
             stopStart.setText("Start");
             return;
         }
-
+        
+        try{
+            wordToLabel= String.valueOf(JOptionPane.showInputDialog ( "Input the word to label in the pictures." )); 
+        }catch(Exception e1){
+            e1.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Invalid word format. Please try again.");
+            return;
+        }
+        
+        try{
+            numberOfPicturesToSend= Integer.valueOf(JOptionPane.showInputDialog ( "Input the number of pictures to label." )); 
+        }catch(Exception e2){
+            e2.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Invalid number of images to use. Please try again.");
+            return;
+        }
+        
         //Get information of pictures
         for (int i = 0; i < numberOfPicturesToSend; i++) {
             JFrame parentFrame = new JFrame();
@@ -128,6 +148,7 @@ public class ServerGUI extends JFrame implements ActionListener, WindowListener 
                     String fileToSavePath = fileToSave.getAbsolutePath();
                     System.out.println("Save as file: " + fileToSavePath);
                     listOfPicturesToSend.add(fileToSavePath);
+                    listOfResultsOfGame.add(fileToSavePath+"; Result: ");
                     BufferedImage bimg =ImageIO.read(new File(fileToSavePath));
                     listOfPicturesToSendBuffered.add(bimg);
                     listOfPicturesToSendEncoded.add(encodeToString(bimg, fileToSavePath.substring(fileToSavePath.indexOf(".")+1)));
@@ -141,6 +162,27 @@ public class ServerGUI extends JFrame implements ActionListener, WindowListener 
 
         if (listOfPicturesToSendEncoded.size() < numberOfPicturesToSend) {
             JOptionPane.showMessageDialog(this, "You need to select exactly " + numberOfPicturesToSend + " pictures to send to the players.");
+            return;
+        }
+        
+        try{
+            JOptionPane.showMessageDialog(this, "Select destination to save result.");
+            JFrame parentFrame = new JFrame();
+
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Specify a file to save");
+            FileNameExtensionFilter filter = new FileNameExtensionFilter("txt", "txt", "txt");
+            fileChooser.setFileFilter(filter);
+            int userSelection = fileChooser.showSaveDialog(parentFrame);
+
+            if (userSelection == JFileChooser.APPROVE_OPTION) {
+                File fileToSave = fileChooser.getSelectedFile();
+                System.out.println("Save as file: " + fileToSave.getAbsolutePath() + ".txt");
+                pathOfResultFile = fileToSave.getAbsolutePath() + ".txt";
+            }
+        }catch(Exception e3){
+            e3.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Invalid path. Please try again.");
             return;
         }
 

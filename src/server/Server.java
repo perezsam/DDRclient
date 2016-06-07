@@ -6,6 +6,7 @@ import java.io.*;
 import java.net.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import javax.swing.JOptionPane;
 
 public class Server {
     // a unique ID for each connection
@@ -30,6 +31,8 @@ public class Server {
 	 *  server constructor that receive the port to listen to for connection as parameter
 	 *  in console
      */
+    public boolean flag = true;
+
     public Server(int port) {
         this(port, null);
     }
@@ -127,7 +130,7 @@ public class Server {
         if (sg == null) {
             System.out.print(messageLf);
         } else {
-            sg.appendRoom(messageLf+"\n");     // append in the room window
+            sg.appendRoom(messageLf + "\n");     // append in the room window
         }
         // we loop in reverse order in case we would have to remove a Client
         // because it has disconnected
@@ -250,27 +253,44 @@ public class Server {
 
                     case ChatMessage.MESSAGE:
 
-                        if (message.contains("WORD INPUT:")) {
-                            if (noOfWordsInput == 0) {
-                                //first word
-                                word1 = message.substring(11);
-                                noOfWordsInput++;
-                            } else {
-                                //second word
-                                word2 = message.substring(11);
-                                noOfWordsInput = 0;
+                        if (message.contains("RESULTOFGAME:")) {
+                            if (flag) {
+                                flag = false;
+                                String result = message.substring(13);
+                                for (int i = 0; i < sg.listOfResultsOfGame.size(); i++) {
+                                    String valueOfTest = result.substring(0, 1);
+                                    result = result.substring(1);
 
-                                if (word1.equals(word2)) {
-                                    //Same word
-                                    broadcast("SAME WORDS:"+message.substring(11));
-                                } else {
-                                    //Diferent word
-                                    broadcast("ERROR IN WORDS");
+                                    if (valueOfTest.equalsIgnoreCase("1")) {
+                                        sg.listOfResultsOfGame.set(i, sg.listOfResultsOfGame.get(i) + "It is a/an " + sg.wordToLabel);
+                                    } else {
+                                        sg.listOfResultsOfGame.set(i, sg.listOfResultsOfGame.get(i) + "It is NOT a/an " + sg.wordToLabel);
+                                    }
                                 }
-                                word1 = "";
-                                word2 = "";
+
+                                System.out.println("Result in server");
+                                for (int i = 0; i < sg.listOfResultsOfGame.size(); i++) {
+                                    System.out.println(sg.listOfResultsOfGame.get(i));
+                                }
+                                try {
+                                    File file = new File(sg.pathOfResultFile);
+                                    FileWriter fileWriter = new FileWriter(file);
+                                    fileWriter.write("Result of game:");
+                                    fileWriter.write(System.getProperty("line.separator"));
+                                    for (int w = 0; w < sg.listOfResultsOfGame.size(); w++) {
+                                        fileWriter.write(sg.listOfResultsOfGame.get(w));
+                                        fileWriter.write(System.getProperty("line.separator"));
+                                    }
+
+                                    fileWriter.flush();
+                                    fileWriter.close();
+                                    JOptionPane.showMessageDialog(sg, "File saved successfully.");
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
                             }
-                        }else{
+
+                        } else {
                             broadcast(message);
                         }
                         break;
@@ -286,21 +306,20 @@ public class Server {
 						writeMsg((i+1) + ") " + ct.username + " since " + ct.date);
 					}*/
 
-                        
                         //writeMsg("IMAGE:12345");
                         //Send images to clients
-                        
-                        for(int i=0;i<sg.listOfPicturesToSendEncoded.size();i++){
-                            writeMsg("IMAGE:"+sg.listOfPicturesToSendEncoded.get(i));
+                        writeMsg("NUMBEROFPICTURES:" + sg.numberOfPicturesToSend);
+                        writeMsg("LABELTOUSE:" + sg.wordToLabel);
+
+                        for (int i = 0; i < sg.listOfPicturesToSendEncoded.size(); i++) {
+                            writeMsg("IMAGE:" + sg.listOfPicturesToSendEncoded.get(i));
                         }
-                        try{
+                        try {
                             Thread.sleep(1000);
-                        }catch(Exception e){
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
-                            
-                        
-                        
+
                         broadcast("Number of users:" + al.size());
                         break;
                 }

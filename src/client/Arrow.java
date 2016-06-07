@@ -8,8 +8,8 @@ import java.util.Timer;
 
 public class Arrow extends JLabel {
 
-    TimerTask timerTaskAnimation;
-    TimerTask timerTaskMovement;
+//    TimerTask timerTaskAnimation;
+//    TimerTask timerTaskMovement;
     String typeArrow = "";
     String direction = "";
     int playerIndex;
@@ -21,9 +21,9 @@ public class Arrow extends JLabel {
     int xPositionLPlayer1 = 10;
     int xPositionDPlayer1 = 70;
     int xPositionUPlayer1 = 140;
-    int xPositionRPlayer1 = 200;
+    int xPositionRPlayer1 = 210;
 
-    int rightShift = 510;
+    int rightShift = 520;
 
     int xPositionLPlayer2 = rightShift;
     int xPositionDPlayer2 = rightShift + 70;
@@ -43,8 +43,10 @@ public class Arrow extends JLabel {
 
         setText("");
         setSize(60, 60);
+        setBounds(getXBound(direction, playerIndex), counterPosition, 60, 60);
+        setIcon(new javax.swing.ImageIcon(getClass().getResource("/arrowSprites/arrow" + typeArrow + "-" + direction + "-" + animationFrame + ".png")));
 
-        timerTaskAnimation = new TimerTask() {
+        /*timerTaskAnimation = new TimerTask() {
             public void run() {
                 try {
                     setIcon(new javax.swing.ImageIcon(getClass().getResource("/arrowSprites/arrow" + typeArrow + "-" + direction + "-" + animationFrame + ".png")));
@@ -60,8 +62,8 @@ public class Arrow extends JLabel {
         };
 
         Timer timer = new Timer();
-        timer.scheduleAtFixedRate(timerTaskAnimation, 0, 200);
-
+        timer.scheduleAtFixedRate(timerTaskAnimation, 0, 200);*/
+/*
         timerTaskMovement = new TimerTask() {
             int innerCounter = counterPosition;
 
@@ -81,7 +83,7 @@ public class Arrow extends JLabel {
         };
 
         Timer timer2 = new Timer();
-        timer2.scheduleAtFixedRate(timerTaskMovement, 0, speed);
+        timer2.scheduleAtFixedRate(timerTaskMovement, 0, speed);*/
     }
 
     public int getXBound(String str, int playerIndex) {
@@ -112,21 +114,35 @@ public class Arrow extends JLabel {
                 result = xPositionLPlayer2;
             }
         }
-
         return result;
     }
+    
 
     public void destroy() {
         System.out.println("Destroy after");
-        timerTaskAnimation.cancel();
-        timerTaskMovement.cancel();
+//       timerTaskAnimation.cancel();
+//        timerTaskMovement.cancel();
         setIcon(null);
+
+        try {
+            if (playerIndex == 1) {
+                DDRMain.listOfArrowsPlayer1.remove(DDRMain.listOfArrowsPlayer1.indexOf(this));
+            } else {
+                DDRMain.listOfArrowsPlayer2.remove(DDRMain.listOfArrowsPlayer2.indexOf(this));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        System.out.println("Size of list of 1: "+DDRMain.listOfArrowsPlayer1.size());
+
     }
 
     public void destroy2() {
         System.out.println("Destroy on time");
-        timerTaskAnimation.cancel();
-        timerTaskMovement.cancel();
+//        timerTaskAnimation.cancel();
+        
+//        timerTaskMovement.cancel();
         setIcon(null);
     }
 
